@@ -111,13 +111,12 @@ Untuk mempermudah mendapatkan informasi mengenai misi dari Handler, bantulah Loi
 ### Jawaban Soal 2
 
 - WISE
-  Mengedit konfigurasi pada WISE sebagai server di file `/etc/bind/named.conf.local` dengan menjalankan perintah berikut
+
+Mengedit konfigurasi pada WISE sebagai server di file `/etc/bind/named.conf.local` untuk emnambahkan zone baru.
 
 ```
 nano /etc/bind/named.conf.local
 ```
-
-Lalu tambahkan zone
 
 ```
 zone "wise.ITB06.com"{
@@ -132,13 +131,11 @@ Setelah itu buatlah direktori baru pada WISE
 mkdir -p /etc/bind/wise
 ```
 
-Mengedit konfigurasi lokal WISE untuk menambahkan domain
+Mengedit konfigurasi lokal WISE untuk menambahkan domain di file `/etc/bind/wise/wise.ITB06.com`
 
 ```
 nano /etc/bind/wise/wise.ITB06.com
 ```
-
-Isi dengan file berikut
 
 ```
 $TTL    604800
@@ -162,7 +159,8 @@ service bind9 restart
 ```
 
 - SSS
-  Menambahkan nameserver pada konfigurasi SSS sebagai client. Jalankan perintah berikut satu persatu
+
+Menambahkan nameserver pada konfigurasi SSS sebagai client. Jalankan perintah berikut satu persatu
 
 ```
 apt update
