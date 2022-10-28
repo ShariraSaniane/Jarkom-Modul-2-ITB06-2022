@@ -14,7 +14,7 @@ Repository ini dibuat oleh:
 
 Twilight (〈黄昏 (たそがれ) 〉, <Tasogare>) adalah seorang mata-mata yang berasal dari negara Westalis. Demi menjaga perdamaian antara Westalis dengan Ostania, Twilight dengan nama samaran Loid Forger (ロイド・フォージャー, Roido Fōjā) di bawah organisasi WISE menjalankan operasinya di negara Ostania dengan cara melakukan spionase, sabotase, penyadapan dan kemungkinan pembunuhan. Berikut adalah peta dari negara Ostania:
 
-[image1.1](image/topologi1.png)
+!![image1.1](image/topologi1.png)
 
 ## Soal 1
 
@@ -24,7 +24,7 @@ WISE akan dijadikan sebagai DNS Master, Berlint akan dijadikan DNS Slave, dan Ed
 
 Kami membuat topologi telebih dahulu sebagai berikut :
 
-[image1.2](image/topologi.png)
+!![image1.2](image/topologi.png)
 
 Langkah berikutnya kami akan melakukan konfigurasi pada setiap node yang ada :
 
@@ -102,7 +102,7 @@ iface eth0 inet static
 
 melakukan testing dengan sebagai berikut
 
-[image1.3](image/no%201.png)
+!![image1.3](image/no%201.png)
 
 ## Soal 2
 
