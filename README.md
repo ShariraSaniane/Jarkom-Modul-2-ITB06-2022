@@ -168,7 +168,7 @@ apt install dnsutils -y
 echo "nameserver 192.217.3.2" > /etc/resolv.conf
 ```
 
-Testing pada client SSS
+Jalankan command berikut pada SSS
 
 ```
 ping wise.itb06.com
@@ -186,7 +186,7 @@ Setelah itu ia juga ingin membuat subdomain eden.wise.yyy.com dengan alias www.e
 
 **Server WISE**
 
-Mengedit konfigurasi lokal WISE untuk menambahkan domain di file `/etc/bind/wise/wise.ITB06.com`
+Mengedit konfigurasi lokal WISE untuk menambahkan subdomain di file `/etc/bind/wise/wise.ITB06.com`
 
 ```
 nano /etc/bind/wise/wise.ITB06.com
@@ -257,6 +257,31 @@ zone "3.217.192.in-addr.arpa" {
 };
 ```
 
+Mengedit konfigurasi lokal pada reversed WISE di file `/etc/bind/wise/3.217.192.in-addr.arpa`
+
+```
+nano /etc/bind/wise/3.217.192.in-addr.arpa
+```
+
+```
+$TTL    604800
+@       IN      SOA     wise.ITB06.com. root.wise.ITB06.com. (
+                              2         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+3.217.192.in-addr.arpa.   IN      NS      wise.ITB06.com.
+2                       IN      PTR     wise.ITB06.com.
+```
+
+Restart bind9 pada WISE
+
+```
+service bind9 restart
+```
+
 **Testing pada SSS**
 
 dengan menjalankan perintah
@@ -271,11 +296,71 @@ berikut dokumentasinya :
 
 Agar dapat tetap dihubungi jika server WISE bermasalah, buatlah juga Berlint sebagai DNS Slave untuk domain utama
 
-(penyelasaian )
+### Jawaban Soal 5
+
+**Server WISE**
+
+Mengedit konfigurasi pada WISE sebagai server di file `/etc/bind/named.conf.local` untuk me-notify Berlint.
+
+```
+nano /etc/bind/named.conf.local
+```
+
+```
+zone "wise.itb06.com" {
+        type master;
+		notify yes;
+        also-notify { 192.217.2.2; };	//IP Berlint
+        allow-transfer { 192.217.2.2; };	//IP Berlint
+        file "/etc/bind/wise/wise.itb06.com";
+};
+
+zone "3.217.192.in-addr.arpa" {
+        type master;
+        file "/etc/bind/wise/3.217.192.in-addr.arpa";
+};
+```
+
+Restart bind9 pada WISE
+
+```
+service bind9 restart
+```
+
+**Slave Berlint**
+
+Set up Berlint sebagai Slave dengan menjalankan perintah berikut satu persatu
+
+```
+apt update
+apt install bind9 -y
+```
+
+Mengedit konfigurasi lokal pada Berlint sebagai server slave di file `/etc/bind/named.conf.local`.
+
+```
+nano /etc/bind/named.conf.local
+```
+
+```
+zone "wise.ITB06.com" {
+    type slave;
+    masters { 192.217.3.2; }; // Masukan IP WISE tanpa tanda petik
+    file "/var/lib/bind/wise.ITB06.com";
+};
+```
+
+Restart bind9 pada Berlint
+
+```
+service bind9 restart
+```
 
 **Testing pada SSS**
 
-Perintah yang di jalankan
+Sebelumnya stop dulu bind9 pada WISE dengan menjalankan `service bind9 stop`
+
+Perintah yang di jalankan pada SSS
 
 `ping wise.itbo6.com`
 
