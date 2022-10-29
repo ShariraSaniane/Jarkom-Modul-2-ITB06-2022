@@ -110,7 +110,7 @@ Untuk mempermudah mendapatkan informasi mengenai misi dari Handler, bantulah Loi
 
 ### Jawaban Soal 2
 
-**Server WISE**
+#### Server WISE
 
 Mengedit konfigurasi pada WISE sebagai server di file `/etc/bind/named.conf.local` untuk menambahkan zone baru.
 
@@ -184,7 +184,7 @@ Setelah itu ia juga ingin membuat subdomain eden.wise.yyy.com dengan alias www.e
 
 ### Jawaban Soal 3
 
-**Server WISE**
+#### Server WISE
 
 Mengedit konfigurasi lokal WISE untuk menambahkan subdomain di file `/etc/bind/wise/wise.ITB06.com`
 
@@ -237,7 +237,7 @@ Buat juga reverse domain untuk domain utama
 
 ### Jawaban Soal 4
 
-**Server WISE**
+#### Server WISE
 
 Mengedit konfigurasi pada WISE sebagai server di file `/etc/bind/named.conf.local` untuk menambahkan zone baru.
 
@@ -298,7 +298,7 @@ Agar dapat tetap dihubungi jika server WISE bermasalah, buatlah juga Berlint seb
 
 ### Jawaban Soal 5
 
-**Server WISE**
+#### Server WISE
 
 Mengedit konfigurasi pada WISE sebagai server di file `/etc/bind/named.conf.local` untuk me-notify Berlint.
 
@@ -358,7 +358,7 @@ service bind9 restart
 
 **Testing pada SSS**
 
-Sebelumnya stop dulu bind9 pada WISE dengan menjalankan `service bind9 stop`
+Sebelumnya stop terlebih dahulu bind9 pada WISE dengan menjalankan `service bind9 stop`
 
 Perintah yang di jalankan pada SSS
 
@@ -441,7 +441,8 @@ apt-get update
 apt-get install lynx -y
 ```
 
-**Server WISE**
+#### Server WISE
+
 Pada server lakukan instalasi Apache, php, openssl untuk melakukan download ke website https dengan cara sebagai berikut :
 
 ```
@@ -499,7 +500,8 @@ Setelah itu, Loid juga membutuhkan agar url www.wise.yyy.com/index.php/home dapa
 
 ### Jawaban soal no 9
 
-**Server WISE**
+#### Server WISE
+
 Selanjutnya kami menambahkan syntax sebagai berikut `/etc/apache2/sites-available/wise.itb06.com.conf`
 
 `Alias \"/home\" \"/var/www/wise.ITB06.com/index.php/home\"`
