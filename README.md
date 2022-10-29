@@ -487,6 +487,8 @@ Buat direktori operation di Berlint
 mkdir -p /etc/bind/operation
 ```
 
+Menambahkan domain
+
 ```
 nano /etc/bind/operation/operation.wise.ITB06.com
 ```
@@ -503,8 +505,6 @@ $TTL    604800
 @          IN      NS      operation.wise.ITB06.com.
 @          IN      A       192.217.2.3 ; IP Eden
 www        IN      CNAME   operation.wise.ITB06.com.
-strix      IN      A       192.217.2.3 ; IP Eden
-www.strix  IN      CNAME   strix.operation.wise.ITB06.com.
 ```
 
 Restart bind9 pada Berlint
@@ -537,7 +537,35 @@ Untuk informasi yang lebih spesifik mengenai Operation Strix, buatlah subdomain 
 
 ## Jawaban soal no 7
 
-penjelasan soon
+**Slave Berlint**
+
+Menambahkan subdomain Strix pada Berlint di file `/etc/bind/operation/operation.wise.ITB06.com`
+
+```
+nano /etc/bind/operation/operation.wise.ITB06.com
+```
+
+```
+$TTL    604800
+@       IN      SOA     operation.wise.ITB06.com. root.operation.wise.ITB06.com. (
+                              2         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+@          IN      NS      operation.wise.ITB06.com.
+@          IN      A       192.217.2.3 ; IP Eden
+www        IN      CNAME   operation.wise.ITB06.com.
+strix      IN      A       192.217.2.3 ; IP Eden
+www.strix  IN      CNAME   strix.operation.wise.ITB06.com.
+```
+
+Restart bind9 pada Berlint
+
+```
+service bind9 restart
+```
 
 **Testing pada SSS**
 Perintah yang di jalankan
