@@ -110,9 +110,9 @@ Untuk mempermudah mendapatkan informasi mengenai misi dari Handler, bantulah Loi
 
 ### Jawaban Soal 2
 
-#### Server WISE
+**Server WISE**
 
-Mengedit konfigurasi pada WISE sebagai server di file `/etc/bind/named.conf.local` untuk menambahkan zone baru.
+Mengedit konfigurasi lokal pada WISE sebagai server di file `/etc/bind/named.conf.local` untuk menambahkan zone baru.
 
 ```
 nano /etc/bind/named.conf.local
@@ -131,7 +131,7 @@ Setelah itu buatlah direktori baru pada WISE
 mkdir -p /etc/bind/wise
 ```
 
-Mengedit konfigurasi lokal WISE untuk menambahkan domain di file `/etc/bind/wise/wise.ITB06.com`
+Menambahkan domain di file `/etc/bind/wise/wise.ITB06.com`
 
 ```
 nano /etc/bind/wise/wise.ITB06.com
@@ -184,9 +184,9 @@ Setelah itu ia juga ingin membuat subdomain eden.wise.yyy.com dengan alias www.e
 
 ### Jawaban Soal 3
 
-#### Server WISE
+**Server WISE**
 
-Mengedit konfigurasi lokal WISE untuk menambahkan subdomain di file `/etc/bind/wise/wise.ITB06.com`
+Menambahkan subdomain di file `/etc/bind/wise/wise.ITB06.com`
 
 ```
 nano /etc/bind/wise/wise.ITB06.com
@@ -237,9 +237,9 @@ Buat juga reverse domain untuk domain utama
 
 ### Jawaban Soal 4
 
-#### Server WISE
+**Server WISE**
 
-Mengedit konfigurasi pada WISE sebagai server di file `/etc/bind/named.conf.local` untuk menambahkan zone baru.
+Mengedit konfigurasi lokal pada WISE sebagai server di file `/etc/bind/named.conf.local` untuk menambahkan zone baru.
 
 ```
 nano /etc/bind/named.conf.local
@@ -257,7 +257,7 @@ zone "3.217.192.in-addr.arpa" {
 };
 ```
 
-Mengedit konfigurasi lokal pada reversed WISE di file `/etc/bind/wise/3.217.192.in-addr.arpa`
+Menambahkan reversed WISE di file `/etc/bind/wise/3.217.192.in-addr.arpa`
 
 ```
 nano /etc/bind/wise/3.217.192.in-addr.arpa
@@ -298,7 +298,7 @@ Agar dapat tetap dihubungi jika server WISE bermasalah, buatlah juga Berlint seb
 
 ### Jawaban Soal 5
 
-#### Server WISE
+**Server WISE**
 
 Mengedit konfigurasi pada WISE sebagai server di file `/etc/bind/named.conf.local` untuk me-notify Berlint.
 
@@ -374,7 +374,144 @@ Karena banyak informasi dari Handler, buatlah subdomain yang khusus untuk operat
 
 ### Jawaban soal no 6
 
-penjelasannya soon
+**Server WISE**
+
+Menambahkan subdomain operation di file `/etc/bind/wise/wise.ITB06.com`
+
+```
+nano /etc/bind/wise/wise.ITB06.com
+```
+
+```
+$TTL    604800
+@       IN      SOA     wise.ITB06.com. root.wise.ITB06.com. (
+                              2         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+@             IN      NS      wise.ITB06.com.
+@             IN      A       $WISE_IP ; IP WISE
+@             IN      AAAA    ::1
+www           IN      CNAME   wise.ITB06.com.
+Eden          IN      A       $EDEN_IP ; IP Eden
+www.Eden      IN      CNAME   Eden.wise.ITB06.com.
+ns1           IN      A       192.217.2.2 ; IP Berlint
+operation     IN      NS      ns1
+www.operation IN      CNAME   wise.ITB06.com
+```
+
+Mengedit options konfigurasi pada WISE di `/etc/bind/named.conf.options`
+
+```
+nano /etc/bind/named.conf.options
+```
+
+```
+options {
+        directory \"/var/cache/bind\";
+        allow-query{any;};
+        auth-nxdomain no;    # conform to RFC1035
+        listen-on-v6 { any; };
+};
+```
+
+Edit file `/etc/bind/named.conf.local`
+
+```
+nano /etc/bind/named.conf.local
+```
+
+Comment baris berikut
+
+```
+zone "wise.itb06.com" {
+        type master;
+	//	notify yes;
+    //    also-notify { 192.217.2.2; };	//IP Berlint
+        allow-transfer { 192.217.2.2; };	//IP Berlint
+        file "/etc/bind/wise/wise.itb06.com";
+};
+
+zone "3.217.192.in-addr.arpa" {
+        type master;
+        file "/etc/bind/wise/3.217.192.in-addr.arpa";
+};
+```
+
+Restart bind9 pada WISE
+
+```
+service bind9 restart
+```
+
+**Slave Berlint**
+
+Mengedit options konfigurasi pada Berlint di `/etc/bind/named.conf.options`
+
+```
+nano /etc/bind/named.conf.options
+```
+
+```
+options {
+        directory \"/var/cache/bind\";
+        allow-query{any;};
+        auth-nxdomain no;    # conform to RFC1035
+        listen-on-v6 { any; };
+};
+```
+
+Mengedit konfigurasi lokal pada Berlint sebagai server slave di file `/etc/bind/named.conf.local`.
+
+```
+nano /etc/bind/named.conf.local
+```
+
+```
+zone "wise.ITB06.com" {
+    type slave;
+    masters { 192.217.3.2; }; // Masukan IP WISE tanpa tanda petik
+    file "/var/lib/bind/wise.ITB06.com";
+};
+zone "operation.wise.ITB06.com" {
+	type master;
+	file "/etc/bind/operation/operation.wise.ITB06.com";
+};
+```
+
+Buat direktori operation di Berlint
+
+```
+mkdir -p /etc/bind/operation
+```
+
+```
+nano /etc/bind/operation/operation.wise.ITB06.com
+```
+
+```
+$TTL    604800
+@       IN      SOA     operation.wise.ITB06.com. root.operation.wise.ITB06.com. (
+                              2         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+@          IN      NS      operation.wise.ITB06.com.
+@          IN      A       192.217.2.3 ; IP Eden
+www        IN      CNAME   operation.wise.ITB06.com.
+strix      IN      A       192.217.2.3 ; IP Eden
+www.strix  IN      CNAME   strix.operation.wise.ITB06.com.
+```
+
+Restart bind9 pada Berlint
+
+```
+service bind9 restart
+```
 
 **Testing pada SSS**
 
@@ -441,8 +578,7 @@ apt-get update
 apt-get install lynx -y
 ```
 
-#### Server WISE
-
+**Server WISE**
 Pada server lakukan instalasi Apache, php, openssl untuk melakukan download ke website https dengan cara sebagai berikut :
 
 ```
@@ -500,8 +636,7 @@ Setelah itu, Loid juga membutuhkan agar url www.wise.yyy.com/index.php/home dapa
 
 ### Jawaban soal no 9
 
-#### Server WISE
-
+**Server WISE**
 Selanjutnya kami menambahkan syntax sebagai berikut `/etc/apache2/sites-available/wise.itb06.com.conf`
 
 `Alias \"/home\" \"/var/www/wise.ITB06.com/index.php/home\"`
