@@ -112,7 +112,7 @@ Untuk mempermudah mendapatkan informasi mengenai misi dari Handler, bantulah Loi
 
 **Server WISE**
 
-Mengedit konfigurasi pada WISE sebagai server di file `/etc/bind/named.conf.local` untuk emnambahkan zone baru.
+Mengedit konfigurasi pada WISE sebagai server di file `/etc/bind/named.conf.local` untuk menambahkan zone baru.
 
 ```
 nano /etc/bind/named.conf.local
@@ -184,11 +184,40 @@ Setelah itu ia juga ingin membuat subdomain eden.wise.yyy.com dengan alias www.e
 
 ### Jawaban Soal 3
 
-langkah langkah
+**Server WISE**
+
+Mengedit konfigurasi lokal WISE untuk menambahkan domain di file `/etc/bind/wise/wise.ITB06.com`
+
+```
+nano /etc/bind/wise/wise.ITB06.com
+```
+
+```
+$TTL    604800
+@       IN      SOA     wise.ITB06.com. root.wise.ITB06.com. (
+                              2         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+@             IN      NS      wise.ITB06.com.
+@             IN      A       $WISE_IP ; IP WISE
+@             IN      AAAA    ::1
+www           IN      CNAME   wise.ITB06.com.
+Eden          IN      A       $EDEN_IP ; IP Eden
+www.Eden      IN      CNAME   Eden.wise.ITB06.com.
+```
+
+Restart bind9 pada WISE
+
+```
+service bind9 restart
+```
 
 **Testing pada SSS**
 
-dengan menjalankan perintah
+Dengan menjalankan perintah
 
 `ping eden.wise.itb06.com`
 
@@ -206,7 +235,27 @@ dan menjalankan perintah
 
 Buat juga reverse domain untuk domain utama
 
-(penyelasaian )
+### Jawaban Soal 4
+
+**Server WISE**
+
+Mengedit konfigurasi pada WISE sebagai server di file `/etc/bind/named.conf.local` untuk menambahkan zone baru.
+
+```
+nano /etc/bind/named.conf.local
+```
+
+```
+zone "wise.itb06.com" {
+        type master;
+        file "/etc/bind/wise/wise.itb06.com";
+};
+
+zone "3.217.192.in-addr.arpa" {
+        type master;
+        file "/etc/bind/wise/3.217.192.in-addr.arpa";
+};
+```
 
 **Testing pada SSS**
 
