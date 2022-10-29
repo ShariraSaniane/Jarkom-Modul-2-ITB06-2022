@@ -235,7 +235,49 @@ Setelah melakukan konfigurasi server, maka dilakukan konfigurasi Webserver. Pert
 
 ### Jawaban soal no 8 
 
-penjelasan soon 
+**Client SSS**
+Langkah pertama, lakukan ``apt-get update`` dan menginstall lynx dengan cara sebagai berikut : 
+
+```
+apt-get update
+apt-get install lynx -y
+```
+
+**Server WISE**
+Pada server lakukan instalasi Apache, php, openssl untuk melakukan download ke website https dengan cara sebagai berikut : 
+
+```
+apt-get install apache2 -y
+service apache2 start
+apt-get install php -y
+apt-get install libapache2-mod-php7.0 -y
+service apache2 
+apt-get install ca-certificates openssl -y
+```
+
+Setelah itu lakukan konfigurasi file ``/etc/apache2/sites-available/wise.itb06.com.conf``. DcumentRoot diletakkan di /vwr/www/wise.itb06.com. dan jangan lupa untuk menambahkan serverneme dan serveraliass
+
+```
+<VirtualHost *:80>
+        ServerAdmin webmaster@localhost
+        DocumentRoot /var/www/wise.ITB06.com
+        ServerName wise.ITB06.com
+        ServerAlias www.wise.ITB06.com
+        <Directory /var/www/wise.ITB06.com/>
+                Options +Indexes
+        </Directory>
+ 
+        Alias \"/home\" \"/var/www/wise.ITB06.com/index.php/home\"
+</VirtualHost>
+```
+
+Lalu lakukan membaut sebuah direkroti root untuk server wise.itb06.com dan melakukan copy file content
+
+```
+mkdir /var/www/wise.itb06.com
+cp -r /root/Praktikum-Modul-2-Jarkom/wise/. /var/www/wise.itb06.com
+service apache2 restart
+```
 
 **Testing pada SSS**
 
@@ -247,12 +289,25 @@ output :
 
 ![image8](image/8.png)
 
+``lynx www.wise.ITB06.com``
+
+output : 
+
+![image8](image/8.png)
+
+
 ## Soal no 9 
 Setelah itu, Loid juga membutuhkan agar url www.wise.yyy.com/index.php/home dapat menjadi menjadi www.wise.yyy.com/home 
 
 ### Jawaban soal no 9 
 
-penjelasan soon 
+**Server WISE**
+Selanjutnya kami menambahkan syntax sebagai berikut ``/etc/apache2/sites-available/wise.itb06.com.conf``
+
+``Alias \"/home\" \"/var/www/wise.ITB06.com/index.php/home\"``
+
+untuk membuat ``/index,php/home`` akan berpindah ke /home saja
+
 
 **Testing pada SSS**
 
@@ -270,7 +325,15 @@ Setelah itu, pada subdomain www.eden.wise.yyy.com, Loid membutuhkan penyimpanan 
 
 ### Jawaban soal no 10
 
-penjelasan soon
+Langkah pertama membuat sebuah directory di dalam ``/var/www/`` dengan nama eden.wise.itb06.com, setelah file di download akan langsung diunzip menggunakan command unzip dan memindahkan isi folder yang berupa asset lalu menghapus folder defaultnya. Di dalam ``/etc/apache2/sites-available/wise.ITB06.com.conf``
+
+```
+        ServerAdmin webmaster@localhost
+        DocumentRoot /var/www/Eden.wise.ITB06.com
+        ServerName Eden.wise.ITB06.com
+        ServerAlias www.Eden.wise.ITB06.com
+```
+Hal ini membuat DocumentRoot dari subdomain ``www.eden.wise.itb06.com``akan terletak di ``/var/www/eden.wise.itb06.com.`` 
 
 **Testing pada SSS**
 
@@ -288,7 +351,16 @@ Akan tetapi, pada folder /public, Loid ingin hanya dapat melakukan directory lis
 
 ### Jawaban soal no 11
 
-penjelasan soon
+**WISE**
+membuat directory listing dengan menambahkna konfigurasi di ``/etc/apache2/sites-available/Eden.wise.ITB06.com.conf``
+
+```
+        <Directory /var/www/Eden.wise.ITB06.com/public>
+                Options +Indexes
+        </Directory>
+
+```
+
 
 **Testing pada SSS**
 
@@ -306,7 +378,19 @@ Tidak hanya itu, Loid juga ingin menyiapkan error file 404.html pada folder /err
 
 ### Jawaban soal no 12
 
-penjelasan soon
+**WISE**
+Pada Wise edit konfigurasi terlebih dahulu pada ``/etc/apache2/sites-available/Eden.wise.ITB06.com.conf``sebagai berikut 
+
+```
+        ErrorDocument 404 /error/404.html
+        <Files \"/var/www/Eden.wise.ITB06.com/error/404.html\">
+                <If \"-z %{ENV:REDIRECT_STATUS}\">
+                        RedirectMatch 404 ^/error/404.html$
+                </If>
+        </Files>
+
+```
+Dalam file tersebut kami menambahkan ErrorDocument dan Files sehingga apabila muncul error code 404 pada web akan meredirect menuju file 404 yang sudah disiapkan yaitu ``/error/404.html``
 
 **Testing pada SSS**
 
@@ -324,7 +408,13 @@ Loid juga meminta Franky untuk dibuatkan konfigurasi virtual host. Virtual host 
 
 ### Jawaban soal no 13
 
-penjelasan soon
+**WISE**
+Pada WISE sekali lagi di edit konfigurasi pada ``/etc/apache2/sites-available/Eden.wise.ITB06.com.conf`` sebagai berikut : 
+
+``Alias \"/js\" \"/var/www/Eden.wise.ITB06.com/public/js\"``
+
+Maksudnya bahwa ``Alias`` disini akan mentranslate direktori web ``/js`` menjadi ``/public/js``
+
 
 **Testing pada SSS**
 
@@ -336,13 +426,32 @@ output :
 
 ![image13](image/13.png)
 
-## Soal no 14 dan 15
+## Soal no 14 
 
-Loid meminta agar www.strix.operation.wise.yyy.com hanya bisa diakses dengan port 15000 dan port 15500 dengan autentikasi username Twilight dan password opStrix dan file di /var/www/strix.operation.wise.yyy
+Loid meminta agar www.strix.operation.wise.yyy.com hanya bisa diakses dengan port 15000 dan port 15500
 
-### Jawaban soal no 14 dan 15
+### Jawaban soal no 14 
 
-penjelasan soon
+**WISE**
+konfigurasi file ``/etc/apache2/sites-available/strix.operation.wise.ITB06.com.conf`` disini menambahkan CirtualHost baru yang berada pada port 15000 dan 15500 sebagai berikut : 
+
+```
+<VirtualHost *:15000 *:15500>
+        ServerAdmin webmaster@localhost
+        DocumentRoot /var/www/strix.operation.wise.ITB06.com
+        ServerName strix.operation.wise.ITB06.com
+        ServerAlias www.strix.operation.wise.ITB06.com
+        <Directory \"/var/www/strix.operation.wise.ITB06.com\">
+                AuthType Basic
+                AuthName \"Restricted Content\"
+                AuthUserFile /var/www/strix.operation.wise.ITB06 
+                Require valid-user
+        </Directory>
+</VirtualHost>
+
+```
+
+Maka dengan begitu web www.trix.operation.wise.ITB06.com hanya akan bisa diakses dengan port 15000 dan port 15500
 
 **Testing pada SSS**
 
@@ -354,13 +463,42 @@ output :
 
 ![image14](image/14.png)
 
+
+## Soal no 15
+Dengan autentikasi username Twilight dan password opStrix dan file di /var/www/strix.operation.wise.yyy
+
+### Jawaban soal no 15
+
+**WISE**
+Pada wise dilakukan command
+
+``htpasswd -b -c /var/www/strix.operation.wise.ITB06 Twilight opStrix``
+
+Perintah tersebut berfungsi untuk mengatur basic authentication yang disimpan pada file /var/www/.strix.operation.wise.itb06 dengan username Twilight dan password opStrix
+
+**Testing pada SSS**
+
+Perintah yang di jalankan 
+
+``lynx strix.operation.wise.itb06.com:1500``
+
+output : 
+
+![image14](image/14.png)
+
+
 ## Soal no 16
 
 dan setiap kali mengakses IP Eden akan dialihkan secara otomatis ke www.wise.yyy.com
 
 ### Jawaban soal no 16
 
-penjelasan soon
+**WISE**
+Pada file ``/etc/apache2/sites-available/000-default.conf`` menambahkan 
+
+``redirect permanent / http://wise.ITB06.com``
+
+sehingga akan langsung meredirect www.wise,itb06.com ketika membuka IP WISE
 
 **Testing pada SSS**
 
@@ -379,7 +517,23 @@ Karena website www.eden.wise.yyy.com semakin banyak pengunjung dan banyak modifi
 
 ### Jawaban soal no 17
 
-penjelasan soon
+Membuat file ``/var/www/Eden.wise.ITB06.com/.htaccess`` yang isinya sebagai berikut : 
+
+```
+RewriteEngine On
+RewriteCond %{REQUEST_URI} !^/public/images/eden.png$
+RewriteCond %{REQUEST_FILENAME} !-d 
+RewriteRule ^(.*)eden(.*)$ /public/images/eden.png [R=301,L]
+```
+Kemudian pada file ``/etc/apache2/sites-available/strix.operation.wise.ITB06.com.conf`` kami tambahkan directory nya
+
+```
+         <Directory /var/www/Eden.wise.ITB06.com>
+                Options +FollowSymLinks -Multiviews
+                AllowOverride All
+        </Directory>
+```
+
 
 **Testing pada SSS**
 
@@ -389,6 +543,14 @@ Perintah yang di jalankan
 
 output : 
 
+menginput nama eden.png
+
 ![image17.1](image/17.1.png)
+
+kemudian save to disk ]
+
 ![image17.2](image/17.2.png)
+
+maka setelah di download maka akan didapatkan hasil sebagai berikut : 
+
 ![image17.3](image/17.3.png)
