@@ -535,7 +535,7 @@ berikut dokumentasinya
 
 Untuk informasi yang lebih spesifik mengenai Operation Strix, buatlah subdomain melalui Berlint dengan akses strix.operation.wise.yyy.com dengan alias www.strix.operation.wise.yyy.com yang mengarah ke Eden
 
-## Jawaban soal no 7
+### Jawaban soal no 7
 
 **Slave Berlint**
 
